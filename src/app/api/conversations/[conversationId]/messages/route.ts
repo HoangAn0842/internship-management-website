@@ -9,7 +9,7 @@ const supabase = createClient(
 // GET: Lấy tất cả messages trong một conversation
 export async function GET(
   request: NextRequest,
-  { params }: { params: { conversationId: string } }
+  { params }: { params: Promise<{ conversationId: string }> }
 ) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -26,7 +26,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { conversationId } = params;
+    const { conversationId } = await params;
 
     // Verify user has access to this conversation
     const { data: conversation } = await supabase
@@ -77,7 +77,7 @@ export async function GET(
 // POST: Gửi message mới
 export async function POST(
   request: NextRequest,
-  { params }: { params: { conversationId: string } }
+  { params }: { params: Promise<{ conversationId: string }> }
 ) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -94,7 +94,7 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { conversationId } = params;
+    const { conversationId } = await params;
     const body = await request.json();
     const { content } = body;
 
@@ -158,7 +158,7 @@ export async function POST(
 // PATCH: Đánh dấu messages là đã đọc
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { conversationId: string } }
+  { params }: { params: Promise<{ conversationId: string }> }
 ) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -175,7 +175,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { conversationId } = params;
+    const { conversationId } = await params;
 
     // Mark all messages from other person as read
     const { error } = await supabase
